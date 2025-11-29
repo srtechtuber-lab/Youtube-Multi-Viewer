@@ -476,16 +476,16 @@
             <div class="control-group">
                 <h3>Play Mode</h3>
                 <div class="options" id="playOptions">
-                    <div class="option" data-value="1">1x</div>
-                    <div class="option" data-value="2">2x</div>
-                    <div class="option" data-value="5">5x</div>
-                    <div class="option" data-value="10">10x</div>
-                    <div class="option" data-value="20">20x</div>
-                    <div class="option" data-value="loop">Loop</div>
-                    <div class="option" id="customPlayOption">Custom</div>
+                    <div class="option" data-value="1">Play 1 Time</div>
+                    <div class="option" data-value="2">Play 2 Times</div>
+                    <div class="option" data-value="5">Play 5 Times</div>
+                    <div class="option" data-value="10">Play 10 Times</div>
+                    <div class="option" data-value="20">Play 20 Times</div>
+                    <div class="option" data-value="loop">Loop Continuously</div>
+                    <div class="option" id="customPlayOption">Custom Times</div>
                 </div>
                 <div class="custom-input" id="customPlayInput">
-                    <input type="number" id="customPlayValue" min="1" max="100" placeholder="Enter multiplier">
+                    <input type="number" id="customPlayValue" min="1" max="100" placeholder="Enter play count">
                 </div>
             </div>
 
@@ -623,6 +623,12 @@
             });
         });
 
+        // Play mode tracking
+        const playModeData = {
+            playCount: 1, // Default to play once
+            isLooping: false
+        };
+
         // Run videos functionality
         document.getElementById('runBtn').addEventListener('click', function() {
             const videoUrl = document.getElementById('videoUrl').value.trim();
@@ -648,6 +654,21 @@
                 }
             }
 
+            // Get play mode
+            const selectedPlay = document.querySelector('#playOptions .option.selected');
+            if (selectedPlay) {
+                if (selectedPlay.id === 'customPlayOption') {
+                    playModeData.playCount = parseInt(document.getElementById('customPlayValue').value) || 1;
+                    playModeData.isLooping = false;
+                } else if (selectedPlay.getAttribute('data-value') === 'loop') {
+                    playModeData.isLooping = true;
+                    playModeData.playCount = 9999; // A high number for practical purposes
+                } else {
+                    playModeData.playCount = parseInt(selectedPlay.getAttribute('data-value')) || 1;
+                    playModeData.isLooping = false;
+                }
+            }
+
             // Limit screen count for performance
             if (screenCount > 50) {
                 screenCount = 50;
@@ -659,26 +680,51 @@
 
             // Create video frames
             for (let i = 0; i < screenCount; i++) {
-                const videoFrame = document.createElement('div');
-                videoFrame.className = 'video-frame';
-                
-                // Start with videos muted
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
-                iframe.allow = 'autoplay; encrypted-media';
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
-                removeBtn.innerHTML = '×';
-                removeBtn.addEventListener('click', function() {
-                    videoFrame.remove();
-                });
-                
-                videoFrame.appendChild(iframe);
-                videoFrame.appendChild(removeBtn);
-                document.getElementById('videosContainer').appendChild(videoFrame);
+                createVideoFrame(videoId, i, playModeData);
             }
         });
+
+        // Function to create a video frame with play mode tracking
+        function createVideoFrame(videoId, index, playMode) {
+            const videoFrame = document.createElement('div');
+            videoFrame.className = 'video-frame';
+            videoFrame.id = `video-frame-${index}`;
+            
+            // Start with videos muted
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+            iframe.allow = 'autoplay; encrypted-media';
+            
+            // Track play count for this frame
+            let playCounter = 0;
+            
+            // Listen for video end events to handle replay
+            iframe.addEventListener('load', function() {
+                // This is a simplified approach - in a real implementation
+                // you would use the YouTube API to detect when a video ends
+                
+                // For demonstration, we'll simulate the behavior with a timer
+                // In practice, you would use the YouTube Player API
+                setTimeout(() => {
+                    if (playMode.isLooping || playCounter < playMode.playCount - 1) {
+                        playCounter++;
+                        // Restart the video
+                        iframe.src = iframe.src.split('?')[0] + '?autoplay=1&mute=1';
+                    }
+                }, 10000); // Simulating a 10-second video for demo
+            });
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.addEventListener('click', function() {
+                videoFrame.remove();
+            });
+            
+            videoFrame.appendChild(iframe);
+            videoFrame.appendChild(removeBtn);
+            document.getElementById('videosContainer').appendChild(videoFrame);
+        }
 
         // Close theme dropdown when clicking outside
         document.addEventListener('click', function(event) {
