@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Multi-Screen Player</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-color: #ddd;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+        }
+
+        /* Theme Variables */
+        .dark {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+            --background-color: #2c3e50;
+            --text-color: #ecf0f1;
+            --card-bg: #34495e;
+            --border-color: #7f8c8d;
+        }
+
+        .light {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-color: #ddd;
+        }
+
+        .neon {
+            --primary-color: #ff00ff;
+            --secondary-color: #00ffff;
+            --background-color: #0a0a0a;
+            --text-color: #ffffff;
+            --card-bg: #1a1a1a;
+            --border-color: #ff00ff;
+        }
+
+        .forest {
+            --primary-color: #27ae60;
+            --secondary-color: #2ecc71;
+            --background-color: #1a2526;
+            --text-color: #ecf0f1;
+            --card-bg: #2c3e33;
+            --border-color: #27ae60;
+        }
+
+        .ocean {
+            --primary-color: #1abc9c;
+            --secondary-color: #16a085;
+            --background-color: #0a2e38;
+            --text-color: #ecf0f1;
+            --card-bg: #1c3c47;
+            --border-color: #1abc9c;
+        }
+
+        .sunset {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+            --background-color: #2c1810;
+            --text-color: #f5b7b1;
+            --card-bg: #4a2c2a;
+            --border-color: #e74c3c;
+        }
+
+        .space {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+            --background-color: #0d1b2a;
+            --text-color: #e0e0e0;
+            --card-bg: #1d2d3f;
+            --border-color: #9b59b6;
+        }
+
+        .vintage {
+            --primary-color: #d35400;
+            --secondary-color: #e67e22;
+            --background-color: #f7f3e3;
+            --text-color: #5d4037;
+            --card-bg: #e8d8c3;
+            --border-color: #a1887f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .theme-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .theme-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 10px;
+            width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .theme-options.show {
+            display: block;
+        }
+
+        .theme-option {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        .theme-option:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .input-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .url-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--background-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: var(--secondary-color);
+        }
+
+        .video-preview {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .video-thumbnail {
+            max-width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .video-title {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .controls-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 8px 15px;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .custom-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-input input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .run-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .run-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: var(--success-color);
+        }
+
+        .run-btn:hover {
+            background: #27ae60;
+        }
+
+        .videos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .video-frame {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .video-frame iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .video-frame:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .mute-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .mute-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .mute-btn.muted {
+            background: var(--danger-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .url-input {
+                flex-direction: column;
+            }
+            
+            .options {
+                justify-content: center;
+            }
+            
+            .theme-selector {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .theme-options {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .audio-control {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="light">
+    <div class="container">
+        <header>
+            <h1>YouTube Multi-Screen Player</h1>
+            <p class="subtitle">Increase your watch hours with multiple simultaneous video playback</p>
+        </header>
+
+        <div class="theme-selector">
+            <button class="theme-btn">Change Theme</button>
+            <div class="theme-options">
+                <div class="theme-option" data-theme="light">Light</div>
+                <div class="theme-option" data-theme="dark">Dark</div>
+                <div class="theme-option" data-theme="neon">Neon</div>
+                <div class="theme-option" data-theme="forest">Forest</div>
+                <div class="theme-option" data-theme="ocean">Ocean</div>
+                <div class="theme-option" data-theme="sunset">Sunset</div>
+                <div class="theme-option" data-theme="space">Space</div>
+                <div class="theme-option" data-theme="vintage">Vintage</div>
+            </div>
+        </div>
+
+        <section class="input-section">
+            <div class="url-input">
+                <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+                <button id="searchBtn">Search</button>
+            </div>
+            <div class="video-preview" id="videoPreview">
+                <img class="video-thumbnail" id="videoThumbnail" src="" alt="Video Thumbnail">
+                <div class="video-title" id="videoTitle"></div>
+            </div>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-group">
+                <h3>Number of Screens</h3>
+                <div class="options" id="screenOptions">
+                    <div class="option" data-value="1">1</div>
+                    <div class="option" data-value="2">2</div>
+                    <div class="option" data-value="5">5</div>
+                    <div class="option" data-value="10">10</div>
+                    <div class="option" data-value="20">20</div>
+                    <div class="option" data-value="30">30</div>
+                    <div class="option" data-value="50">50</div>
+                    <div class="option" data-value="100">100</div>
+                    <div class="option" id="customScreenOption">Custom</div>
+                </div>
+                <div class="custom-input" id="customScreenInput">
+                    <input type="number" id="customScreenValue" min="1" max="200" placeholder="Enter number">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Play Mode</h3>
+                <div class="options" id="playOptions">
+                    <div class="option" data-value="1">1x</div>
+                    <div class="option" data-value="2">2x</div>
+                    <div class="option" data-value="5">5x</div>
+                    <div class="option" data-value="10">10x</div>
+                    <div class="option" data-value="20">20x</div>
+                    <div class="option" data-value="loop">Loop</div>
+                    <div class="option" id="customPlayOption">Custom</div>
+                </div>
+                <div class="custom-input" id="customPlayInput">
+                    <input type="number" id="customPlayValue" min="1" max="100" placeholder="Enter multiplier">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Video Quality</h3>
+                <div class="options" id="qualityOptions">
+                    <div class="option" data-value="144">144p</div>
+                    <div class="option" data-value="240">240p</div>
+                    <div class="option" data-value="360">360p</div>
+                    <div class="option" data-value="480">480p</div>
+                    <div class="option" data-value="720">720p</div>
+                    <div class="option" data-value="1080">1080p</div>
+                    <div class="option" data-value="1440">2K</div>
+                    <div class="option" data-value="2160">4K</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="run-section">
+            <button class="run-btn" id="runBtn">Run Videos</button>
+        </section>
+
+        <div class="videos-container" id="videosContainer"></div>
+
+        <div class="audio-control">
+            <button class="mute-btn" id="muteBtn">
+                <span class="mute-icon">🔊</span>
+                <span class="mute-text">Mute All</span>
+            </button>
+        </div>
+
+        <footer>
+            <p>YouTube Multi-Screen Player &copy; 2023 | Increase your organic watch hours</p>
+        </footer>
+    </div>
+
+    <script>
+        // Theme switching functionality
+        document.querySelector('.theme-btn').addEventListener('click', function() {
+            document.querySelector('.theme-options').classList.toggle('show');
+        });
+
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const theme = this.getAttribute('data-theme');
+                document.body.className = theme;
+                document.querySelector('.theme-options').classList.remove('show');
+            });
+        });
+
+        // Video URL processing
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            if (!videoUrl) return;
+
+            // Extract video ID from YouTube URL
+            const videoId = extractVideoId(videoUrl);
+            if (!videoId) {
+                alert('Please enter a valid YouTube URL');
+                return;
+            }
+
+            // Show video preview
+            const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            document.getElementById('videoThumbnail').src = thumbnailUrl;
+            
+            // In a real implementation, you would fetch the video title via YouTube API
+            document.getElementById('videoTitle').textContent = 'YouTube Video (Title would appear here with API integration)';
+            document.getElementById('videoPreview').style.display = 'block';
+        });
+
+        function extractVideoId(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+
+        // Option selection functionality
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.parentElement;
+                
+                // Remove selected class from all options in the same group
+                parent.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Handle custom options
+                if (this.id === 'customScreenOption') {
+                    document.getElementById('customScreenInput').style.display = 'block';
+                } else if (this.id === 'customPlayOption') {
+                    document.getElementById('customPlayInput').style.display = 'block';
+                }
+            });
+        });
+
+        // Global mute state
+        let isMuted = true;
+
+        // Mute/unmute functionality
+        document.getElementById('muteBtn').addEventListener('click', function() {
+            isMuted = !isMuted;
+            const muteBtn = document.getElementById('muteBtn');
+            const muteIcon = muteBtn.querySelector('.mute-icon');
+            const muteText = muteBtn.querySelector('.mute-text');
+            
+            if (isMuted) {
+                muteIcon.textContent = '🔇';
+                muteText.textContent = 'Unmute All';
+                muteBtn.classList.add('muted');
+            } else {
+                muteIcon.textContent = '🔊';
+                muteText.textContent = 'Mute All';
+                muteBtn.classList.remove('muted');
+            }
+            
+            // Update all iframes
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                const src = iframe.src;
+                if (isMuted) {
+                    // Ensure muted parameter is in the URL
+                    if (!src.includes('mute=1')) {
+                        iframe.src = src.includes('?') ? 
+                            src + '&mute=1' : 
+                            src + '?mute=1';
+                    }
+                } else {
+                    // Remove mute parameter
+                    iframe.src = src.replace(/[?&]mute=1/, '');
+                }
+            });
+        });
+
+        // Run videos functionality
+        document.getElementById('runBtn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            if (!videoUrl) {
+                alert('Please enter a YouTube URL first');
+                return;
+            }
+
+            const videoId = extractVideoId(videoUrl);
+            if (!videoId) {
+                alert('Please enter a valid YouTube URL');
+                return;
+            }
+
+            // Get selected options
+            let screenCount = 1;
+            const selectedScreen = document.querySelector('#screenOptions .option.selected');
+            if (selectedScreen) {
+                if (selectedScreen.id === 'customScreenOption') {
+                    screenCount = parseInt(document.getElementById('customScreenValue').value) || 1;
+                } else {
+                    screenCount = parseInt(selectedScreen.getAttribute('data-value')) || 1;
+                }
+            }
+
+            // Limit screen count for performance
+            if (screenCount > 50) {
+                screenCount = 50;
+                alert('Screen count limited to 50 for performance reasons');
+            }
+
+            // Clear previous videos
+            document.getElementById('videosContainer').innerHTML = '';
+
+            // Create video frames
+            for (let i = 0; i < screenCount; i++) {
+                const videoFrame = document.createElement('div');
+                videoFrame.className = 'video-frame';
+                
+                // Start with videos muted
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+                iframe.allow = 'autoplay; encrypted-media';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '×';
+                removeBtn.addEventListener('click', function() {
+                    videoFrame.remove();
+                });
+                
+                videoFrame.appendChild(iframe);
+                videoFrame.appendChild(removeBtn);
+                document.getElementById('videosContainer').appendChild(videoFrame);
+            }
+        });
+
+        // Close theme dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const themeSelector = document.querySelector('.theme-selector');
+            if (!themeSelector.contains(event.target)) {
+                document.querySelector('.theme-options').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
