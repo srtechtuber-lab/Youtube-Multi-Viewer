@@ -357,29 +357,64 @@
             bottom: 20px;
             right: 20px;
             z-index: 100;
-        }
-
-        .mute-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
 
-        .mute-btn:hover {
-            transform: scale(1.05);
+        .mute-text {
+            font-weight: bold;
+            color: var(--text-color);
         }
 
-        .mute-btn.muted {
-            background: var(--danger-color);
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--danger-color);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
         }
 
         footer {
@@ -418,6 +453,9 @@
             .audio-control {
                 bottom: 10px;
                 right: 10px;
+                flex-direction: column;
+                gap: 5px;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -481,7 +519,7 @@
                     <div class="option" data-value="5">Play 5 Times</div>
                     <div class="option" data-value="10">Play 10 Times</div>
                     <div class="option" data-value="20">Play 20 Times</div>
-                    <div class="option" data-value="loop">Loop Continuously</div>
+                    <div class="option" data-value="loop" id="loopOption">Loop Continuously</div>
                     <div class="option" id="customPlayOption">Custom Times</div>
                 </div>
                 <div class="custom-input" id="customPlayInput">
@@ -511,10 +549,11 @@
         <div class="videos-container" id="videosContainer"></div>
 
         <div class="audio-control">
-            <button class="mute-btn" id="muteBtn">
-                <span class="mute-icon">🔊</span>
-                <span class="mute-text">Mute All</span>
-            </button>
+            <span class="mute-text">Mute All</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="muteToggle" checked>
+                <span class="slider"></span>
+            </label>
         </div>
 
         <footer>
@@ -588,22 +627,9 @@
         // Global mute state
         let isMuted = true;
 
-        // Mute/unmute functionality
-        document.getElementById('muteBtn').addEventListener('click', function() {
-            isMuted = !isMuted;
-            const muteBtn = document.getElementById('muteBtn');
-            const muteIcon = muteBtn.querySelector('.mute-icon');
-            const muteText = muteBtn.querySelector('.mute-text');
-            
-            if (isMuted) {
-                muteIcon.textContent = '🔇';
-                muteText.textContent = 'Unmute All';
-                muteBtn.classList.add('muted');
-            } else {
-                muteIcon.textContent = '🔊';
-                muteText.textContent = 'Mute All';
-                muteBtn.classList.remove('muted');
-            }
+        // Mute toggle functionality
+        document.getElementById('muteToggle').addEventListener('change', function() {
+            isMuted = this.checked;
             
             // Update all iframes
             const iframes = document.querySelectorAll('iframe');
@@ -684,35 +710,48 @@
             }
         });
 
-        // Function to create a video frame with play mode tracking
+        // Function to create a video frame with full video looping
         function createVideoFrame(videoId, index, playMode) {
             const videoFrame = document.createElement('div');
             videoFrame.className = 'video-frame';
             videoFrame.id = `video-frame-${index}`;
             
-            // Start with videos muted
+            // Start with videos muted based on toggle state
+            const muteParam = isMuted ? '&mute=1' : '';
+            const loopParam = playMode.isLooping ? '&loop=1&playlist=' + videoId : '';
+            
             const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}${loopParam}`;
             iframe.allow = 'autoplay; encrypted-media';
             
-            // Track play count for this frame
-            let playCounter = 0;
-            
-            // Listen for video end events to handle replay
-            iframe.addEventListener('load', function() {
+            // For non-looping videos with multiple plays
+            if (!playMode.isLooping && playMode.playCount > 1) {
+                let playCounter = 1;
+                
                 // This is a simplified approach - in a real implementation
                 // you would use the YouTube API to detect when a video ends
+                // and restart it for the specified number of times
                 
-                // For demonstration, we'll simulate the behavior with a timer
-                // In practice, you would use the YouTube Player API
-                setTimeout(() => {
-                    if (playMode.isLooping || playCounter < playMode.playCount - 1) {
-                        playCounter++;
-                        // Restart the video
-                        iframe.src = iframe.src.split('?')[0] + '?autoplay=1&mute=1';
-                    }
-                }, 10000); // Simulating a 10-second video for demo
-            });
+                // For demonstration, we'll just create multiple iframes
+                // stacked on top of each other that play sequentially
+                // This is a workaround since we can't control YouTube iframes directly
+                for (let i = 1; i < playMode.playCount; i++) {
+                    setTimeout(() => {
+                        const additionalIframe = document.createElement('iframe');
+                        additionalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}`;
+                        additionalIframe.allow = 'autoplay; encrypted-media';
+                        additionalIframe.style.position = 'absolute';
+                        additionalIframe.style.top = '0';
+                        additionalIframe.style.left = '0';
+                        additionalIframe.style.width = '100%';
+                        additionalIframe.style.height = '100%';
+                        additionalIframe.style.zIndex = i + 1;
+                        additionalIframe.style.opacity = '0';
+                        
+                        videoFrame.appendChild(additionalIframe);
+                    }, i * 10000); // Assuming 10-second videos for demo
+                }
+            }
             
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-btn';
@@ -735,4 +774,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
