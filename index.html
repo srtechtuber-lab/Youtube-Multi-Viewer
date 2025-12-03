@@ -523,6 +523,28 @@
             transform: scale(1.1);
         }
 
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-playing {
+            background-color: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-paused {
+            background-color: #FF9800;
+        }
+
+        .status-stopped {
+            background-color: #F44336;
+        }
+
         /* Footer */
         footer {
             background: var(--secondary);
@@ -555,9 +577,9 @@
 
         /* Animations */
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         @keyframes fadeIn {
@@ -723,12 +745,22 @@
             <section class="video-screens-section">
                 <div class="screens-header">
                     <h3 class="section-title">Short Video Screens</h3>
-                    <button id="runBtn">
-                        <i class="fas fa-play-circle"></i> Run Player
-                    </button>
+                    <div>
+                        <span id="playerStatus" style="margin-right: 15px; font-weight: 600;">
+                            <span class="status-indicator status-stopped"></span>Stopped
+                        </span>
+                        <button id="runBtn">
+                            <i class="fas fa-play-circle"></i> Run Player
+                        </button>
+                    </div>
                 </div>
                 <div class="screens-container" id="screensContainer">
                     <!-- Video screens will be added here dynamically -->
+                    <div class="no-screens" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <i class="fas fa-play-circle" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
+                        <h3 style="margin-bottom: 10px;">No Screens Active</h3>
+                        <p>Enter a YouTube Shorts URL, configure your settings, and click "Run Player" to start</p>
+                    </div>
                 </div>
             </section>
         </div>
@@ -756,6 +788,8 @@
         const playbackOptions = document.getElementById('playbackOptions');
         const screensContainer = document.getElementById('screensContainer');
         const runBtn = document.getElementById('runBtn');
+        const playerStatus = document.getElementById('playerStatus');
+        const statusIndicator = playerStatus.querySelector('.status-indicator');
         
         // Configuration
         const screenCounts = [1, 2, 5, 10, 20, 30, 50, 60];
@@ -773,6 +807,9 @@
         let currentVideoId = 'NY7220lNQNA';
         let isPlaying = false;
         let players = [];
+        
+        // YouTube Player API
+        let ytPlayers = [];
         
         // Initialize the page
         function initializePage() {
@@ -824,6 +861,17 @@
             
             // Initialize with a default video
             updateVideoInfo();
+            
+            // Load YouTube IFrame API
+            loadYouTubeAPI();
+        }
+        
+        // Load YouTube IFrame API
+        function loadYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }
         
         // Change website theme
@@ -860,10 +908,12 @@
                 videoId = url.split('youtube.com/shorts/')[1]?.split('?')[0];
             } else if (url.includes('youtu.be/')) {
                 videoId = url.split('youtu.be/')[1]?.split('?')[0];
+            } else if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('youtube.com/watch?v=')[1]?.split('&')[0];
             }
             
             if (!videoId || videoId.length < 10) {
-                alert('Please enter a valid YouTube Shorts URL');
+                alert('Please enter a valid YouTube URL');
                 return;
             }
             
@@ -1004,11 +1054,15 @@
                 stopPlayer();
                 runBtn.innerHTML = `<i class="fas fa-play-circle"></i> Run Player`;
                 runBtn.style.background = "linear-gradient(45deg, var(--primary), var(--accent))";
+                statusIndicator.className = 'status-indicator status-stopped';
+                playerStatus.innerHTML = `<span class="status-indicator status-stopped"></span>Stopped`;
                 isPlaying = false;
             } else {
                 startPlayer();
                 runBtn.innerHTML = `<i class="fas fa-stop-circle"></i> Stop Player`;
                 runBtn.style.background = "linear-gradient(45deg, #ff3333, #ff6666)";
+                statusIndicator.className = 'status-indicator status-playing';
+                playerStatus.innerHTML = `<span class="status-indicator status-playing"></span>Playing`;
                 isPlaying = true;
             }
         }
@@ -1018,39 +1072,40 @@
             // Clear existing screens
             clearScreens();
             
+            // Remove the "no screens" message if present
+            const noScreensMsg = screensContainer.querySelector('.no-screens');
+            if (noScreensMsg) noScreensMsg.remove();
+            
             // Create screens based on selected count
             for (let i = 0; i < selectedScreenCount; i++) {
                 createVideoScreen(i + 1);
-            }
-            
-            // Auto-play if selected
-            if (selectedPlaybackMode === 'auto') {
-                setTimeout(() => {
-                    players.forEach(player => {
-                        if (player && typeof player.playVideo === 'function') {
-                            // In a real implementation, we would call playVideo() on YouTube iframe API
-                            // For demo, we'll simulate the play action
-                            console.log(`Playing video on screen ${player.screenNum}`);
-                        }
-                    });
-                }, 1000);
             }
         }
         
         // Stop the player
         function stopPlayer() {
-            // Stop all players
-            players.forEach(player => {
+            // Stop all YouTube players
+            ytPlayers.forEach(player => {
                 if (player && typeof player.stopVideo === 'function') {
-                    // In a real implementation, we would call stopVideo() on YouTube iframe API
-                    console.log(`Stopping video on screen ${player.screenNum}`);
+                    player.stopVideo();
                 }
             });
             
+            // Clear players arrays
+            ytPlayers = [];
             players = [];
+            
+            // Show "no screens" message
+            screensContainer.innerHTML = `
+                <div class="no-screens" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                    <i class="fas fa-play-circle" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">No Screens Active</h3>
+                    <p>Enter a YouTube Shorts URL, configure your settings, and click "Run Player" to start</p>
+                </div>
+            `;
         }
         
-        // Create a video screen
+        // Create a video screen with actual YouTube player
         function createVideoScreen(screenNumber) {
             const screenItem = document.createElement('div');
             screenItem.className = 'screen-item';
@@ -1061,21 +1116,11 @@
             screenNumberIndicator.className = 'screen-number';
             screenNumberIndicator.textContent = screenNumber;
             
-            // Create iframe for YouTube player
-            // Note: In a real implementation, you would use YouTube iframe API
-            // For demo purposes, we're using a placeholder
-            const iframe = document.createElement('div');
-            iframe.className = 'video-placeholder';
-            iframe.innerHTML = `
-                <div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">
-                    <div style="text-align:center;">
-                        <i class="fab fa-youtube" style="font-size:48px;color:#ff0000;margin-bottom:10px;"></i>
-                        <div>Screen ${screenNumber}</div>
-                        <div>Playing: ${currentVideoId}</div>
-                        <div>Quality: ${selectedQuality}</div>
-                    </div>
-                </div>
-            `;
+            // Create iframe container for YouTube player
+            const iframeContainer = document.createElement('div');
+            iframeContainer.id = `player-${screenNumber}`;
+            iframeContainer.style.width = '100%';
+            iframeContainer.style.height = '100%';
             
             // Create screen controls
             const screenControls = document.createElement('div');
@@ -1090,55 +1135,137 @@
                 <button class="screen-control-btn" onclick="controlScreen(${screenNumber}, 'replay')">
                     <i class="fas fa-redo"></i>
                 </button>
-                <button class="screen-control-btn" onclick="controlScreen(${screenNumber}, 'volume')">
+                <button class="screen-control-btn" onclick="controlScreen(${screenNumber}, 'mute')">
                     <i class="fas fa-volume-up"></i>
                 </button>
             `;
             
             screenItem.appendChild(screenNumberIndicator);
-            screenItem.appendChild(iframe);
+            screenItem.appendChild(iframeContainer);
             screenItem.appendChild(screenControls);
             
             screensContainer.appendChild(screenItem);
             
-            // Create a mock player object
-            const player = {
-                screenNum: screenNumber,
-                playVideo: () => console.log(`Playing screen ${screenNumber}`),
-                stopVideo: () => console.log(`Stopping screen ${screenNumber}`),
-                pauseVideo: () => console.log(`Pausing screen ${screenNumber}`)
+            // Create YouTube player for this screen
+            createYouTubePlayer(screenNumber, iframeContainer.id);
+        }
+        
+        // Create YouTube player instance
+        function createYouTubePlayer(screenNumber, containerId) {
+            // YouTube player parameters
+            const playerVars = {
+                autoplay: selectedPlaybackMode === 'auto' ? 1 : 0,
+                controls: 1,
+                modestbranding: 1,
+                rel: 0,
+                playsinline: 1,
+                enablejsapi: 1,
+                origin: window.location.origin
             };
             
-            players.push(player);
+            // Create player instance
+            const player = new YT.Player(containerId, {
+                height: '100%',
+                width: '100%',
+                videoId: currentVideoId,
+                playerVars: playerVars,
+                events: {
+                    'onReady': (event) => onPlayerReady(event, screenNumber),
+                    'onStateChange': (event) => onPlayerStateChange(event, screenNumber),
+                    'onError': (event) => onPlayerError(event, screenNumber)
+                }
+            });
+            
+            // Store player reference
+            ytPlayers[screenNumber - 1] = player;
+        }
+        
+        // YouTube Player event handlers
+        function onPlayerReady(event, screenNumber) {
+            console.log(`Player ${screenNumber} ready`);
+            
+            // If auto-play is enabled, play the video
+            if (selectedPlaybackMode === 'auto') {
+                setTimeout(() => {
+                    event.target.playVideo();
+                }, 1000 + (screenNumber * 200)); // Staggered start for better performance
+            }
+        }
+        
+        function onPlayerStateChange(event, screenNumber) {
+            const states = {
+                [-1]: 'unstarted',
+                [0]: 'ended',
+                [1]: 'playing',
+                [2]: 'paused',
+                [3]: 'buffering',
+                [5]: 'video cued'
+            };
+            
+            console.log(`Player ${screenNumber} state: ${states[event.data] || event.data}`);
+            
+            // If video ended and auto-play is enabled, replay it
+            if (event.data === YT.PlayerState.ENDED && selectedPlaybackMode === 'auto') {
+                setTimeout(() => {
+                    event.target.seekTo(0);
+                    event.target.playVideo();
+                }, 500);
+            }
+        }
+        
+        function onPlayerError(event, screenNumber) {
+            console.error(`Player ${screenNumber} error:`, event.data);
         }
         
         // Clear all video screens
         function clearScreens() {
-            screensContainer.innerHTML = '';
+            // Stop all players first
+            ytPlayers.forEach(player => {
+                if (player && typeof player.destroy === 'function') {
+                    player.destroy();
+                }
+            });
+            
+            ytPlayers = [];
             players = [];
+            
+            // Clear container
+            screensContainer.innerHTML = '';
         }
         
         // Control individual screen
         function controlScreen(screenNumber, action) {
-            const player = players.find(p => p.screenNum === screenNumber);
+            const playerIndex = screenNumber - 1;
+            const player = ytPlayers[playerIndex];
             
             if (!player) return;
             
             switch(action) {
                 case 'play':
-                    console.log(`Playing screen ${screenNumber}`);
+                    player.playVideo();
                     break;
                 case 'pause':
-                    console.log(`Pausing screen ${screenNumber}`);
+                    player.pauseVideo();
                     break;
                 case 'replay':
-                    console.log(`Replaying screen ${screenNumber}`);
+                    player.seekTo(0);
+                    player.playVideo();
                     break;
-                case 'volume':
-                    console.log(`Toggling volume on screen ${screenNumber}`);
+                case 'mute':
+                    if (player.isMuted()) {
+                        player.unMute();
+                    } else {
+                        player.mute();
+                    }
                     break;
             }
         }
+        
+        // YouTube IFrame API callback
+        window.onYouTubeIframeAPIReady = function() {
+            console.log('YouTube IFrame API ready');
+            // Players will be created when needed
+        };
         
         // Load saved theme from localStorage
         function loadSavedTheme() {
@@ -1155,4 +1282,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
