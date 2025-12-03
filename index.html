@@ -3,774 +3,960 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Multi-Screen Player</title>
+    <title>Shorts Booster - Increase YouTube Watch Hours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --card-bg: #ffffff;
-            --border-color: #ddd;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-        }
-
-        /* Theme Variables */
-        .dark {
-            --primary-color: #9b59b6;
-            --secondary-color: #8e44ad;
-            --background-color: #2c3e50;
-            --text-color: #ecf0f1;
-            --card-bg: #34495e;
-            --border-color: #7f8c8d;
-        }
-
-        .light {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --card-bg: #ffffff;
-            --border-color: #ddd;
-        }
-
-        .neon {
-            --primary-color: #ff00ff;
-            --secondary-color: #00ffff;
-            --background-color: #0a0a0a;
+            --primary-color: #ff0000;
+            --secondary-color: #282828;
+            --background-color: #121212;
             --text-color: #ffffff;
-            --card-bg: #1a1a1a;
-            --border-color: #ff00ff;
+            --card-bg: #1f1f1f;
+            --border-color: #404040;
+            --accent-color: #ff3333;
+            --success-color: #00c853;
+            --transition-speed: 0.3s;
         }
 
-        .forest {
-            --primary-color: #27ae60;
-            --secondary-color: #2ecc71;
-            --background-color: #1a2526;
-            --text-color: #ecf0f1;
-            --card-bg: #2c3e33;
-            --border-color: #27ae60;
+        /* Light Theme */
+        .theme-light {
+            --primary-color: #ff0000;
+            --secondary-color: #f0f0f0;
+            --background-color: #ffffff;
+            --text-color: #212121;
+            --card-bg: #f9f9f9;
+            --border-color: #e0e0e0;
+            --accent-color: #ff5252;
+            --success-color: #00c853;
         }
 
-        .ocean {
-            --primary-color: #1abc9c;
-            --secondary-color: #16a085;
-            --background-color: #0a2e38;
-            --text-color: #ecf0f1;
-            --card-bg: #1c3c47;
-            --border-color: #1abc9c;
+        /* Neon Theme */
+        .theme-neon {
+            --primary-color: #00ff9d;
+            --secondary-color: #0a0a0a;
+            --background-color: #000000;
+            --text-color: #ffffff;
+            --card-bg: #121212;
+            --border-color: #00ff9d;
+            --accent-color: #00ff9d;
+            --success-color: #00ff9d;
         }
 
-        .sunset {
-            --primary-color: #e74c3c;
-            --secondary-color: #c0392b;
-            --background-color: #2c1810;
-            --text-color: #f5b7b1;
-            --card-bg: #4a2c2a;
-            --border-color: #e74c3c;
-        }
-
-        .space {
-            --primary-color: #9b59b6;
-            --secondary-color: #8e44ad;
-            --background-color: #0d1b2a;
-            --text-color: #e0e0e0;
-            --card-bg: #1d2d3f;
-            --border-color: #9b59b6;
-        }
-
-        .vintage {
-            --primary-color: #d35400;
-            --secondary-color: #e67e22;
-            --background-color: #f7f3e3;
-            --text-color: #5d4037;
-            --card-bg: #e8d8c3;
-            --border-color: #a1887f;
+        /* Modern Dark Theme */
+        .theme-modern-dark {
+            --primary-color: #ff4757;
+            --secondary-color: #1e272e;
+            --background-color: #0a0a0a;
+            --text-color: #f1f2f6;
+            --card-bg: #1e272e;
+            --border-color: #374151;
+            --accent-color: #ff6b81;
+            --success-color: #2ed573;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
             line-height: 1.6;
-            padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         header {
             text-align: center;
+            padding: 30px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 30px;
-            padding: 20px;
-            border-bottom: 2px solid var(--border-color);
         }
 
-        h1 {
-            font-size: 2.5rem;
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 10px;
-            color: var(--primary-color);
         }
 
-        .subtitle {
-            font-size: 1.2rem;
+        .logo i {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .tagline {
+            color: var(--text-color);
             opacity: 0.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
         }
 
         .theme-selector {
-            position: fixed;
-            top: 20px;
+            position: absolute;
+            top: 30px;
             right: 20px;
-            z-index: 100;
         }
 
         .theme-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 8px 15px;
-            border-radius: 20px;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .theme-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
 
         .theme-options {
-            display: none;
             position: absolute;
             top: 100%;
             right: 0;
-            background: var(--card-bg);
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 10px;
-            width: 150px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            width: 200px;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .theme-options.show {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
 
         .theme-option {
-            padding: 8px 10px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 3px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            transition: all var(--transition-speed);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .theme-option:hover {
-            background-color: var(--secondary-color);
+            background-color: var(--border-color);
+        }
+
+        .theme-option.active {
+            background-color: var(--primary-color);
             color: white;
         }
 
+        .theme-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .theme-default .theme-color { background-color: #ff0000; }
+        .theme-light .theme-color { background-color: #ff0000; }
+        .theme-neon .theme-color { background-color: #00ff9d; }
+        .theme-modern-dark .theme-color { background-color: #ff4757; }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .input-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-section h2 i {
+            font-size: 1.3rem;
         }
 
         .url-input {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        input[type="text"] {
+        .url-input input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 15px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background: var(--background-color);
+            border-radius: 10px 0 0 10px;
+            background-color: var(--background-color);
             color: var(--text-color);
             font-size: 1rem;
+            outline: none;
         }
 
-        button {
-            padding: 12px 20px;
-            background: var(--primary-color);
+        .url-input button {
+            padding: 15px 25px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 0 10px 10px 0;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: background-color var(--transition-speed);
         }
 
-        button:hover {
-            background: var(--secondary-color);
+        .url-input button:hover {
+            background-color: var(--accent-color);
         }
 
         .video-preview {
+            background-color: var(--background-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
             display: none;
-            margin-top: 20px;
-            text-align: center;
+        }
+
+        .video-preview.active {
+            display: block;
+            animation: slideIn 0.5s ease;
         }
 
         .video-thumbnail {
-            max-width: 100%;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
         }
 
         .video-title {
-            margin-top: 10px;
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        .controls-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+        .settings-section {
+            margin-bottom: 25px;
         }
 
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group h3 {
-            margin-bottom: 10px;
+        .settings-section h3 {
+            margin-bottom: 15px;
             color: var(--primary-color);
-        }
-
-        .options {
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             gap: 10px;
         }
 
-        .option {
-            padding: 8px 15px;
-            background: var(--background-color);
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            background-color: var(--background-color);
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: 8px;
+            color: var(--text-color);
             cursor: pointer;
-            transition: all 0.2s;
+            text-align: center;
+            transition: all var(--transition-speed);
         }
 
-        .option:hover {
-            background: var(--primary-color);
-            color: white;
+        .option-btn:hover {
+            background-color: var(--border-color);
         }
 
-        .option.selected {
-            background: var(--primary-color);
+        .option-btn.active {
+            background-color: var(--primary-color);
             color: white;
-            border-color: var(--secondary-color);
+            border-color: var(--primary-color);
         }
 
         .custom-input {
-            display: none;
-            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
         }
 
         .custom-input input {
-            width: 100px;
-            padding: 8px;
+            flex: 1;
+            padding: 10px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background: var(--background-color);
+            border-radius: 8px;
+            background-color: var(--background-color);
             color: var(--text-color);
         }
 
-        .run-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
         .run-btn {
-            padding: 15px 40px;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
             font-size: 1.2rem;
-            background: var(--success-color);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .run-btn:hover {
-            background: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
         }
 
-        .videos-container {
+        .video-display-section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .display-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .display-header h2 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .screen-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .screen-btn {
+            padding: 8px 15px;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .screen-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .screen-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
+            min-height: 400px;
         }
 
-        .video-frame {
+        .video-container {
             position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 2px solid var(--border-color);
+            background-color: #000;
+            transition: all var(--transition-speed);
         }
 
-        .video-frame iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .video-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-container iframe {
             width: 100%;
             height: 100%;
+            min-height: 500px;
             border: none;
         }
 
-        .remove-btn {
+        .video-info {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .video-frame:hover .remove-btn {
-            opacity: 1;
-        }
-
-        .audio-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--card-bg);
-            padding: 10px 15px;
-            border-radius: 50px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-        }
-
-        .mute-text {
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        /* Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background-color: var(--danger-color);
-            transition: .4s;
-            border-radius: 34px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            color: white;
+            font-size: 0.9rem;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
         }
 
-        input:checked + .slider {
-            background-color: var(--success-color);
+        .stat-item {
+            text-align: center;
         }
 
-        input:checked + .slider:before {
-            transform: translateX(30px);
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 30px 0;
             border-top: 1px solid var(--border-color);
-            margin-top: 30px;
-            font-size: 0.9rem;
+            margin-top: 40px;
+            color: var(--text-color);
             opacity: 0.7;
+            font-size: 0.9rem;
         }
 
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .url-input {
-                flex-direction: column;
-            }
-            
-            .options {
-                justify-content: center;
+            .logo h1 {
+                font-size: 1.8rem;
             }
             
             .theme-selector {
-                position: static;
-                margin-bottom: 20px;
-                text-align: center;
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 15px;
+                justify-content: center;
             }
             
             .theme-options {
                 left: 50%;
                 transform: translateX(-50%);
+                right: auto;
             }
             
-            .audio-control {
-                bottom: 10px;
-                right: 10px;
+            .options-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
                 flex-direction: column;
-                gap: 5px;
-                padding: 8px 12px;
+                gap: 20px;
             }
         }
     </style>
 </head>
-<body class="light">
+<body class="theme-default">
     <div class="container">
         <header>
-            <h1>YouTube Multi-Screen Player</h1>
-            <p class="subtitle">Increase your watch hours with multiple simultaneous video playback</p>
+            <div class="logo">
+                <i class="fab fa-youtube"></i>
+                <h1>Shorts Booster</h1>
+            </div>
+            <p class="tagline">Increase YouTube Shorts watch hours organically with multi-screen playback</p>
+            
+            <div class="theme-selector">
+                <button class="theme-btn" id="themeToggle">
+                    <i class="fas fa-palette"></i>
+                    <span>Theme</span>
+                </button>
+                <div class="theme-options" id="themeOptions">
+                    <div class="theme-option active" data-theme="default">
+                        <span class="theme-color"></span>
+                        <span>Default</span>
+                    </div>
+                    <div class="theme-option" data-theme="light">
+                        <span class="theme-color"></span>
+                        <span>Light</span>
+                    </div>
+                    <div class="theme-option" data-theme="neon">
+                        <span class="theme-color"></span>
+                        <span>Neon</span>
+                    </div>
+                    <div class="theme-option" data-theme="modern-dark">
+                        <span class="theme-color"></span>
+                        <span>Modern Dark</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <div class="theme-selector">
-            <button class="theme-btn">Change Theme</button>
-            <div class="theme-options">
-                <div class="theme-option" data-theme="light">Light</div>
-                <div class="theme-option" data-theme="dark">Dark</div>
-                <div class="theme-option" data-theme="neon">Neon</div>
-                <div class="theme-option" data-theme="forest">Forest</div>
-                <div class="theme-option" data-theme="ocean">Ocean</div>
-                <div class="theme-option" data-theme="sunset">Sunset</div>
-                <div class="theme-option" data-theme="space">Space</div>
-                <div class="theme-option" data-theme="vintage">Vintage</div>
+        <div class="main-content">
+            <div class="input-section">
+                <h2><i class="fas fa-link"></i> Enter YouTube Shorts URL</h2>
+                
+                <div class="url-input">
+                    <input type="url" id="videoUrl" placeholder="https://www.youtube.com/shorts/VIDEO_ID" value="https://www.youtube.com/shorts/NcBjx_eyyxc">
+                    <button id="searchBtn">Search <i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="video-preview" id="videoPreview">
+                    <img src="https://img.youtube.com/vi/NcBjx_eyyxc/maxresdefault.jpg" alt="Video Thumbnail" class="video-thumbnail">
+                    <h3 class="video-title">YouTube Shorts Example Video</h3>
+                    <p>Duration: 60 seconds | Channel: Example Channel</p>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-display"></i> Screens Count</h3>
+                    <div class="options-grid" id="screenOptions">
+                        <div class="option-btn active" data-value="1">1</div>
+                        <div class="option-btn" data-value="2">2</div>
+                        <div class="option-btn" data-value="5">5</div>
+                        <div class="option-btn" data-value="10">10</div>
+                        <div class="option-btn" data-value="20">20</div>
+                        <div class="option-btn" data-value="30">30</div>
+                        <div class="option-btn" data-value="50">50</div>
+                        <div class="option-btn" data-value="100">100</div>
+                        <div class="option-btn" data-value="custom">Custom</div>
+                    </div>
+                    <div class="custom-input" id="customInput" style="display: none;">
+                        <input type="number" id="customScreenCount" placeholder="Enter number of screens" min="1" max="200">
+                        <button class="screen-btn" id="applyCustom">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-highlighter"></i> Video Quality</h3>
+                    <div class="options-grid" id="qualityOptions">
+                        <div class="option-btn active" data-value="auto">Auto</div>
+                        <div class="option-btn" data-value="144">144p</div>
+                        <div class="option-btn" data-value="240">240p</div>
+                        <div class="option-btn" data-value="360">360p</div>
+                        <div class="option-btn" data-value="480">480p</div>
+                        <div class="option-btn" data-value="720">720p</div>
+                        <div class="option-btn" data-value="1080">1080p</div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-play-circle"></i> Playback Options</h3>
+                    <div class="options-grid">
+                        <div class="option-btn active" data-value="auto">Auto-play</div>
+                        <div class="option-btn" data-value="loop">Loop</div>
+                        <div class="option-btn" data-value="mute">Mute All</div>
+                    </div>
+                </div>
+                
+                <button class="run-btn pulse" id="runBtn">
+                    <i class="fas fa-play"></i> Run Shorts Booster
+                </button>
+            </div>
+            
+            <div class="video-display-section">
+                <div class="display-header">
+                    <h2><i class="fas fa-th-large"></i> Multi-Screen Display</h2>
+                    <div class="screen-controls">
+                        <button class="screen-btn active" id="gridView"><i class="fas fa-th"></i> Grid</button>
+                        <button class="screen-btn" id="singleView"><i class="fas fa-expand"></i> Single</button>
+                        <button class="screen-btn" id="stopAll"><i class="fas fa-stop"></i> Stop All</button>
+                    </div>
+                </div>
+                
+                <div class="video-grid" id="videoGrid">
+                    <!-- Video iframes will be inserted here dynamically -->
+                    <div class="placeholder">
+                        <p style="text-align: center; padding: 50px; color: var(--text-color); opacity: 0.5;">
+                            <i class="fas fa-video fa-3x" style="margin-bottom: 20px;"></i><br>
+                            Enter a YouTube Shorts URL and click "Run Shorts Booster" to start
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalScreens">0</div>
+                        <div class="stat-label">Active Screens</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalPlays">0</div>
+                        <div class="stat-label">Total Plays</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="watchHours">0</div>
+                        <div class="stat-label">Watch Hours</div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <section class="input-section">
-            <div class="url-input">
-                <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
-                <button id="searchBtn">Search</button>
-            </div>
-            <div class="video-preview" id="videoPreview">
-                <img class="video-thumbnail" id="videoThumbnail" src="" alt="Video Thumbnail">
-                <div class="video-title" id="videoTitle"></div>
-            </div>
-        </section>
-
-        <section class="controls-section">
-            <div class="control-group">
-                <h3>Number of Screens</h3>
-                <div class="options" id="screenOptions">
-                    <div class="option" data-value="1">1</div>
-                    <div class="option" data-value="2">2</div>
-                    <div class="option" data-value="5">5</div>
-                    <div class="option" data-value="10">10</div>
-                    <div class="option" data-value="20">20</div>
-                    <div class="option" data-value="30">30</div>
-                    <div class="option" data-value="50">50</div>
-                    <div class="option" data-value="100">100</div>
-                    <div class="option" id="customScreenOption">Custom</div>
-                </div>
-                <div class="custom-input" id="customScreenInput">
-                    <input type="number" id="customScreenValue" min="1" max="200" placeholder="Enter number">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Play Mode</h3>
-                <div class="options" id="playOptions">
-                    <div class="option" data-value="1">Play 1 Time</div>
-                    <div class="option" data-value="2">Play 2 Times</div>
-                    <div class="option" data-value="5">Play 5 Times</div>
-                    <div class="option" data-value="10">Play 10 Times</div>
-                    <div class="option" data-value="20">Play 20 Times</div>
-                    <div class="option" data-value="loop" id="loopOption">Loop Continuously</div>
-                    <div class="option" id="customPlayOption">Custom Times</div>
-                </div>
-                <div class="custom-input" id="customPlayInput">
-                    <input type="number" id="customPlayValue" min="1" max="100" placeholder="Enter play count">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Video Quality</h3>
-                <div class="options" id="qualityOptions">
-                    <div class="option" data-value="144">144p</div>
-                    <div class="option" data-value="240">240p</div>
-                    <div class="option" data-value="360">360p</div>
-                    <div class="option" data-value="480">480p</div>
-                    <div class="option" data-value="720">720p</div>
-                    <div class="option" data-value="1080">1080p</div>
-                    <div class="option" data-value="1440">2K</div>
-                    <div class="option" data-value="2160">4K</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="run-section">
-            <button class="run-btn" id="runBtn">Run Videos</button>
-        </section>
-
-        <div class="videos-container" id="videosContainer"></div>
-
-        <div class="audio-control">
-            <span class="mute-text">Mute All</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="muteToggle" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-
+        
         <footer>
-            <p>YouTube Multi-Screen Player &copy; 2023 | Increase your organic watch hours</p>
+            <p>Shorts Booster &copy; 2023 | This tool is for educational purposes. Use responsibly in accordance with YouTube's terms of service.</p>
+            <p style="margin-top: 10px;">Note: This is a demonstration interface. Actual YouTube API integration would require proper authentication.</p>
         </footer>
     </div>
 
     <script>
+        // DOM elements
+        const themeToggle = document.getElementById('themeToggle');
+        const themeOptions = document.getElementById('themeOptions');
+        const themeOptionButtons = document.querySelectorAll('.theme-option');
+        const screenOptions = document.querySelectorAll('#screenOptions .option-btn');
+        const customInput = document.getElementById('customInput');
+        const customScreenCount = document.getElementById('customScreenCount');
+        const applyCustom = document.getElementById('applyCustom');
+        const searchBtn = document.getElementById('searchBtn');
+        const videoPreview = document.getElementById('videoPreview');
+        const runBtn = document.getElementById('runBtn');
+        const videoGrid = document.getElementById('videoGrid');
+        const gridViewBtn = document.getElementById('gridView');
+        const singleViewBtn = document.getElementById('singleView');
+        const stopAllBtn = document.getElementById('stopAll');
+        const totalScreensEl = document.getElementById('totalScreens');
+        const totalPlaysEl = document.getElementById('totalPlays');
+        const watchHoursEl = document.getElementById('watchHours');
+        
+        // State variables
+        let currentTheme = 'default';
+        let selectedScreenCount = 1;
+        let selectedQuality = 'auto';
+        let isRunning = false;
+        let totalPlays = 0;
+        let watchHours = 0;
+        let videoIframes = [];
+        
         // Theme switching functionality
-        document.querySelector('.theme-btn').addEventListener('click', function() {
-            document.querySelector('.theme-options').classList.toggle('show');
+        themeToggle.addEventListener('click', () => {
+            themeOptions.classList.toggle('show');
         });
-
-        document.querySelectorAll('.theme-option').forEach(option => {
-            option.addEventListener('click', function() {
-                const theme = this.getAttribute('data-theme');
-                document.body.className = theme;
-                document.querySelector('.theme-options').classList.remove('show');
+        
+        // Close theme options when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!themeToggle.contains(e.target) && !themeOptions.contains(e.target)) {
+                themeOptions.classList.remove('show');
+            }
+        });
+        
+        themeOptionButtons.forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.getAttribute('data-theme');
+                
+                // Remove all theme classes and add selected one
+                document.body.classList.remove('theme-default', 'theme-light', 'theme-neon', 'theme-modern-dark');
+                document.body.classList.add(`theme-${theme}`);
+                
+                // Update active state
+                themeOptionButtons.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                currentTheme = theme;
+                themeOptions.classList.remove('show');
             });
         });
-
-        // Video URL processing
-        document.getElementById('searchBtn').addEventListener('click', function() {
-            const videoUrl = document.getElementById('videoUrl').value.trim();
-            if (!videoUrl) return;
-
-            // Extract video ID from YouTube URL
-            const videoId = extractVideoId(videoUrl);
-            if (!videoId) {
-                alert('Please enter a valid YouTube URL');
+        
+        // Screen count selection
+        screenOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.getAttribute('data-value');
+                
+                screenOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                if (value === 'custom') {
+                    customInput.style.display = 'flex';
+                } else {
+                    customInput.style.display = 'none';
+                    selectedScreenCount = parseInt(value);
+                    updateStats();
+                }
+            });
+        });
+        
+        // Custom screen count
+        applyCustom.addEventListener('click', () => {
+            const count = parseInt(customScreenCount.value);
+            if (count && count > 0 && count <= 200) {
+                selectedScreenCount = count;
+                updateStats();
+                
+                // Update the custom button to show the selected value
+                const customBtn = document.querySelector('[data-value="custom"]');
+                customBtn.textContent = `Custom (${count})`;
+            } else {
+                alert('Please enter a number between 1 and 200');
+            }
+        });
+        
+        // Quality selection
+        const qualityOptions = document.querySelectorAll('#qualityOptions .option-btn');
+        qualityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                qualityOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedQuality = option.getAttribute('data-value');
+            });
+        });
+        
+        // Search button functionality
+        searchBtn.addEventListener('click', () => {
+            const url = document.getElementById('videoUrl').value;
+            
+            if (!url) {
+                alert('Please enter a YouTube Shorts URL');
                 return;
             }
-
-            // Show video preview
-            const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-            document.getElementById('videoThumbnail').src = thumbnailUrl;
             
-            // In a real implementation, you would fetch the video title via YouTube API
-            document.getElementById('videoTitle').textContent = 'YouTube Video (Title would appear here with API integration)';
-            document.getElementById('videoPreview').style.display = 'block';
+            // Extract video ID from URL (simplified for demo)
+            let videoId = '';
+            if (url.includes('youtube.com/shorts/')) {
+                videoId = url.split('youtube.com/shorts/')[1];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+            } else {
+                alert('Please enter a valid YouTube Shorts URL');
+                return;
+            }
+            
+            // For demo purposes, we'll use a placeholder video
+            videoPreview.innerHTML = `
+                <img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Video Thumbnail" class="video-thumbnail">
+                <h3 class="video-title">YouTube Shorts Video Preview</h3>
+                <p>Video ID: ${videoId} | Duration: 60 seconds | Channel: Demo Channel</p>
+            `;
+            
+            videoPreview.classList.add('active');
         });
-
-        function extractVideoId(url) {
-            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[7].length === 11) ? match[7] : null;
-        }
-
-        // Option selection functionality
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                const parent = this.parentElement;
+        
+        // Run button functionality
+        runBtn.addEventListener('click', () => {
+            const url = document.getElementById('videoUrl').value;
+            
+            if (!url) {
+                alert('Please enter a YouTube Shorts URL first');
+                return;
+            }
+            
+            if (!videoPreview.classList.contains('active')) {
+                alert('Please search for a video first');
+                return;
+            }
+            
+            // Extract video ID from URL (simplified for demo)
+            let videoId = '';
+            if (url.includes('youtube.com/shorts/')) {
+                videoId = url.split('youtube.com/shorts/')[1];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+            } else {
+                // For demo, use a default video ID
+                videoId = 'NcBjx_eyyxc';
+            }
+            
+            // Clear existing iframes
+            videoGrid.innerHTML = '';
+            videoIframes = [];
+            
+            // Create video iframes based on selected screen count
+            for (let i = 0; i < selectedScreenCount; i++) {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+                videoContainer.id = `video-${i}`;
                 
-                // Remove selected class from all options in the same group
-                parent.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('selected');
+                // YouTube embed URL with parameters
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0`;
+                
+                videoContainer.innerHTML = `
+                    <iframe src="${embedUrl}" title="YouTube Shorts Player ${i+1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="video-info">
+                        Screen ${i+1} | Quality: ${selectedQuality === 'auto' ? 'Auto' : selectedQuality + 'p'} | Status: Playing
+                    </div>
+                `;
+                
+                videoGrid.appendChild(videoContainer);
+                videoIframes.push(videoContainer.querySelector('iframe'));
+            }
+            
+            isRunning = true;
+            runBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Booster';
+            runBtn.classList.remove('pulse');
+            runBtn.style.background = 'linear-gradient(90deg, #ff3333, #ff6666)';
+            
+            // Update stats
+            updateStats();
+            startStatsCounter();
+            
+            // Change button functionality to stop
+            runBtn.onclick = stopBooster;
+        });
+        
+        // Stop booster function
+        function stopBooster() {
+            isRunning = false;
+            videoIframes.forEach(iframe => {
+                // In a real implementation, we would stop the video
+                // For demo, we just clear the iframe src
+                iframe.src = '';
+            });
+            
+            videoGrid.innerHTML = '<div class="placeholder"><p style="text-align: center; padding: 50px; color: var(--text-color); opacity: 0.5;"><i class="fas fa-video fa-3x" style="margin-bottom: 20px;"></i><br>Enter a YouTube Shorts URL and click "Run Shorts Booster" to start</p></div>';
+            
+            runBtn.innerHTML = '<i class="fas fa-play"></i> Run Shorts Booster';
+            runBtn.classList.add('pulse');
+            runBtn.style.background = 'linear-gradient(90deg, var(--primary-color), var(--accent-color))';
+            runBtn.onclick = runBtn.click;
+        }
+        
+        // View controls
+        gridViewBtn.addEventListener('click', () => {
+            gridViewBtn.classList.add('active');
+            singleViewBtn.classList.remove('active');
+            videoGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+        });
+        
+        singleViewBtn.addEventListener('click', () => {
+            singleViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            videoGrid.style.gridTemplateColumns = '1fr';
+        });
+        
+        // Stop all videos
+        stopAllBtn.addEventListener('click', () => {
+            if (isRunning) {
+                videoIframes.forEach(iframe => {
+                    // In a real implementation, we would pause the video
+                    // For demo, we just reload it
+                    iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
                 });
                 
-                // Add selected class to clicked option
-                this.classList.add('selected');
+                // Show message
+                const message = document.createElement('div');
+                message.style.cssText = 'position: fixed; top: 20px; right: 20px; background: var(--success-color); color: white; padding: 15px; border-radius: 10px; z-index: 1000;';
+                message.innerHTML = '<i class="fas fa-pause-circle"></i> All videos paused';
+                document.body.appendChild(message);
                 
-                // Handle custom options
-                if (this.id === 'customScreenOption') {
-                    document.getElementById('customScreenInput').style.display = 'block';
-                } else if (this.id === 'customPlayOption') {
-                    document.getElementById('customPlayInput').style.display = 'block';
-                }
-            });
-        });
-
-        // Global mute state
-        let isMuted = true;
-
-        // Mute toggle functionality
-        document.getElementById('muteToggle').addEventListener('change', function() {
-            isMuted = this.checked;
-            
-            // Update all iframes
-            const iframes = document.querySelectorAll('iframe');
-            iframes.forEach(iframe => {
-                const src = iframe.src;
-                if (isMuted) {
-                    // Ensure muted parameter is in the URL
-                    if (!src.includes('mute=1')) {
-                        iframe.src = src.includes('?') ? 
-                            src + '&mute=1' : 
-                            src + '?mute=1';
-                    }
-                } else {
-                    // Remove mute parameter
-                    iframe.src = src.replace(/[?&]mute=1/, '');
-                }
-            });
-        });
-
-        // Play mode tracking
-        const playModeData = {
-            playCount: 1, // Default to play once
-            isLooping: false
-        };
-
-        // Run videos functionality
-        document.getElementById('runBtn').addEventListener('click', function() {
-            const videoUrl = document.getElementById('videoUrl').value.trim();
-            if (!videoUrl) {
-                alert('Please enter a YouTube URL first');
-                return;
-            }
-
-            const videoId = extractVideoId(videoUrl);
-            if (!videoId) {
-                alert('Please enter a valid YouTube URL');
-                return;
-            }
-
-            // Get selected options
-            let screenCount = 1;
-            const selectedScreen = document.querySelector('#screenOptions .option.selected');
-            if (selectedScreen) {
-                if (selectedScreen.id === 'customScreenOption') {
-                    screenCount = parseInt(document.getElementById('customScreenValue').value) || 1;
-                } else {
-                    screenCount = parseInt(selectedScreen.getAttribute('data-value')) || 1;
-                }
-            }
-
-            // Get play mode
-            const selectedPlay = document.querySelector('#playOptions .option.selected');
-            if (selectedPlay) {
-                if (selectedPlay.id === 'customPlayOption') {
-                    playModeData.playCount = parseInt(document.getElementById('customPlayValue').value) || 1;
-                    playModeData.isLooping = false;
-                } else if (selectedPlay.getAttribute('data-value') === 'loop') {
-                    playModeData.isLooping = true;
-                    playModeData.playCount = 9999; // A high number for practical purposes
-                } else {
-                    playModeData.playCount = parseInt(selectedPlay.getAttribute('data-value')) || 1;
-                    playModeData.isLooping = false;
-                }
-            }
-
-            // Limit screen count for performance
-            if (screenCount > 50) {
-                screenCount = 50;
-                alert('Screen count limited to 50 for performance reasons');
-            }
-
-            // Clear previous videos
-            document.getElementById('videosContainer').innerHTML = '';
-
-            // Create video frames
-            for (let i = 0; i < screenCount; i++) {
-                createVideoFrame(videoId, i, playModeData);
+                setTimeout(() => {
+                    document.body.removeChild(message);
+                }, 3000);
             }
         });
-
-        // Function to create a video frame with full video looping
-        function createVideoFrame(videoId, index, playMode) {
-            const videoFrame = document.createElement('div');
-            videoFrame.className = 'video-frame';
-            videoFrame.id = `video-frame-${index}`;
-            
-            // Start with videos muted based on toggle state
-            const muteParam = isMuted ? '&mute=1' : '';
-            const loopParam = playMode.isLooping ? '&loop=1&playlist=' + videoId : '';
-            
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}${loopParam}`;
-            iframe.allow = 'autoplay; encrypted-media';
-            
-            // For non-looping videos with multiple plays
-            if (!playMode.isLooping && playMode.playCount > 1) {
-                let playCounter = 1;
-                
-                // This is a simplified approach - in a real implementation
-                // you would use the YouTube API to detect when a video ends
-                // and restart it for the specified number of times
-                
-                // For demonstration, we'll just create multiple iframes
-                // stacked on top of each other that play sequentially
-                // This is a workaround since we can't control YouTube iframes directly
-                for (let i = 1; i < playMode.playCount; i++) {
-                    setTimeout(() => {
-                        const additionalIframe = document.createElement('iframe');
-                        additionalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}`;
-                        additionalIframe.allow = 'autoplay; encrypted-media';
-                        additionalIframe.style.position = 'absolute';
-                        additionalIframe.style.top = '0';
-                        additionalIframe.style.left = '0';
-                        additionalIframe.style.width = '100%';
-                        additionalIframe.style.height = '100%';
-                        additionalIframe.style.zIndex = i + 1;
-                        additionalIframe.style.opacity = '0';
-                        
-                        videoFrame.appendChild(additionalIframe);
-                    }, i * 10000); // Assuming 10-second videos for demo
-                }
-            }
-            
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-btn';
-            removeBtn.innerHTML = '×';
-            removeBtn.addEventListener('click', function() {
-                videoFrame.remove();
-            });
-            
-            videoFrame.appendChild(iframe);
-            videoFrame.appendChild(removeBtn);
-            document.getElementById('videosContainer').appendChild(videoFrame);
+        
+        // Update stats display
+        function updateStats() {
+            totalScreensEl.textContent = isRunning ? selectedScreenCount : 0;
+            totalPlaysEl.textContent = totalPlays;
+            watchHoursEl.textContent = watchHours.toFixed(2);
         }
-
-        // Close theme dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const themeSelector = document.querySelector('.theme-selector');
-            if (!themeSelector.contains(event.target)) {
-                document.querySelector('.theme-options').classList.remove('show');
-            }
+        
+        // Simulate increasing stats when booster is running
+        function startStatsCounter() {
+            if (!isRunning) return;
+            
+            // Increment plays every 2 seconds per screen
+            totalPlays += selectedScreenCount;
+            
+            // Calculate watch hours (assuming 1 minute per play for Shorts)
+            watchHours += (selectedScreenCount * 0.0167); // 1 minute = 0.0167 hours
+            
+            updateStats();
+            
+            // Continue incrementing every 2 seconds
+            setTimeout(startStatsCounter, 2000);
+        }
+        
+        // Initialize with demo data
+        window.addEventListener('DOMContentLoaded', () => {
+            // Trigger search to show demo video
+            setTimeout(() => {
+                searchBtn.click();
+            }, 500);
+            
+            // Add some random stats for demo
+            totalPlays = Math.floor(Math.random() * 1000) + 500;
+            watchHours = (totalPlays * 0.0167) + (Math.random() * 10);
+            updateStats();
         });
     </script>
 </body>
